@@ -101,7 +101,7 @@ class Cliente {
     adicionarCliente(cliente) {
       this.listaClientes.push(cliente);
     }
-    
+  
     removerClienteEPet(nomeCliente) {
       const clienteIndex = this.listaClientes.findIndex((cliente) => cliente.nome === nomeCliente);
       if (clienteIndex !== -1) {
@@ -111,8 +111,20 @@ class Cliente {
         console.log("Cliente não encontrado.");
       }
     }
+  
+    adicionarClienteComInput(rl) { // Renomear a função para adicionarClienteComInput
+      rl.question("Digite o nome do cliente: ", (nomeCliente) => {
+        rl.question("Digite o nome do pet: ", (nomePet) => {
+          const novoCliente = new Cliente(null, nomeCliente, nomePet, 0);
+          this.adicionarCliente(novoCliente);
+          console.log("Cliente adicionado com sucesso!");
+          exibirMenuAdicionar(rl);
+        });
+      });
+    }
   }
-
+  
+  
   class Pets {
     constructor() {
       this.listaPets = [];
@@ -126,9 +138,22 @@ class Cliente {
     adicionarPet(pet) {
       this.listaPets.push(pet);
     }
-    
+  
+    adicionarPetComInput(rl) {
+      rl.question("Digite o nome do pet: ", (nomePet) => {
+        rl.question("Digite o nome do dono: ", (nomeDono) => {
+          const novoPet = new Pet(null, nomePet, nomeDono); // Crie um novo objeto Pet com o ID como null
+          this.adicionarPet(novoPet); // Adicione o novo pet ao sistema
+          console.log("Pet adicionado com sucesso!");
+          exibirMenuAdicionar(rl);
+        });
+      });
+    }
+  
     removerPet(nomeCliente, nomePet) {
-      const petIndex = this.listaPets.findIndex((pet) => pet.nome === nomePet && pet.dono === nomeCliente);
+      const petIndex = this.listaPets.findIndex(
+        (pet) => pet.nome === nomePet && pet.dono === nomeCliente
+      );
       if (petIndex !== -1) {
         this.listaPets.splice(petIndex, 1);
         console.log("Pet removido com sucesso!");
@@ -137,7 +162,7 @@ class Cliente {
       }
     }
   }
-
+  
 class Pet {
   constructor(id, nome, dono) {
     this.id = id;
@@ -194,6 +219,29 @@ class Consultas {
         return "Consulta não encontrada.";
       }
     }
+  
+    ordenarConsultasPorData() {
+      this.listaConsultas.sort((consulta1, consulta2) => {
+        const [dia1, mes1] = consulta1.data.split('/');
+        const [dia2, mes2] = consulta2.data.split('/');
+  
+        // Compara primeiro o mês
+        if (mes1 < mes2) {
+          return -1;
+        } else if (mes1 > mes2) {
+          return 1;
+        }
+  
+        // Em caso de empate no mês, compara o dia
+        if (dia1 < dia2) {
+          return -1;
+        } else if (dia1 > dia2) {
+          return 1;
+        }
+  
+        return 0;
+      });
+    }
   }
   
   class Consulta {
@@ -205,12 +253,12 @@ class Consultas {
       this.status = status;
       this.data = data;
     }
-  }
-  
+  }  
   
   const consultas = new Consultas();
 
 const sistema = new Sistema();
+
 //Exemplos de funcionários e suas respectivas senhas
 const funcionariosAdicionais = [
     {
@@ -299,7 +347,7 @@ function login(rl) {
 
 function exibirMenuPrincipal(rl) {
     rl.question(
-      "Selecione uma opção:\n1 - Meus Dados\n2 - Listas\n3 - Consultas\n4 - Remover cliente/pet/funcionário\n5 - Logout\n",
+      "Selecione uma opção:\n1 - Meus Dados\n2 - Listas\n3 - Consultas\n4 - Remover cliente/pet/funcionário\n5 - Add cliente ou pet\n6 - Logout\n7 - Verificar fidelização ",
       (opcao) => {
         switch (opcao) {
           case "1":
@@ -358,8 +406,18 @@ function exibirMenuPrincipal(rl) {
                 break;
               
           case "5":
-            exibirMenuInicial(rl);
+            console.log("Opção Add cliente ou pet selecionada")
+            exibirMenuAdicionar(rl);
             break;
+
+          case "6":
+            exibirMenuPrincipal(rl);
+            break;
+
+          case "7":
+            console.log("Opção Verificar fidelização selecionada");
+            verificarFidelizacao(rl);
+            
           default:
             console.log("Opção inválida!");
             exibirMenuPrincipal(rl);
@@ -381,10 +439,10 @@ function exibirMenuPrincipal(rl) {
             console.log("Opção Mudar Consulta selecionada");
             mudarConsulta(rl);
             break;
-          case "3":
-            console.log("Opção Cancelar Consulta selecionada");
-            cancelarConsulta(rl);
-            break;
+            case "3":
+                console.log("Opção Cancelar Consulta selecionada");
+                cancelarConsulta(rl);
+                break;
           case "4":
             console.log("Opção Voltar ao Menu Principal selecionada");
             exibirMenuPrincipal(rl);
@@ -396,7 +454,50 @@ function exibirMenuPrincipal(rl) {
       }
     );
   }
+
+  function verificarFidelizacao(rl) {
+    rl.question("Digite o nome do cliente: ", (nomeCliente) => {
+      const cliente = sistema.clientes.listaClientes.find((cliente) => cliente.nome === nomeCliente);
   
+      if (cliente) {
+        if (cliente.fidelizado) {
+          console.log(`O cliente ${nomeCliente} é fidelizado.`);
+        } else {
+          console.log(`O cliente ${nomeCliente} não é fidelizado.`);
+        }
+      } else {
+        console.log("Cliente não encontrado.");
+      }
+  
+      exibirMenuPrincipal(rl);
+    });
+  }  
+  
+  function exibirMenuAdicionar(rl) {
+    rl.question(
+      "Opção Adicionar selecionada. Selecione uma opção:\n1 - Adicionar Pet\n2 - Adicionar Cliente\n3 - Voltar ao Menu Principal\n",
+      (opcao) => {
+        switch (opcao) {
+          case "1":
+            console.log("Opção Adicionar Pet selecionada");
+            sistema.pets.adicionarPetComInput(rl);
+            break;
+            case "2":
+            console.log("Opção Adicionar Cliente selecionada");
+            sistema.clientes.adicionarClienteComInput(rl)
+                break;
+          case "3":
+            console.log("Opção Voltar ao Menu Principal selecionada");
+            exibirMenuPrincipal(rl);
+            break;
+          default:
+            console.log("Opção inválida!");
+            exibirMenuAdicionar(rl);
+        }
+      }
+    );
+  }
+
   function marcarConsulta(rl) {
     rl.question("Digite o ID da consulta: ", (id) => {
       rl.question("Digite o nome do cliente: ", (cliente) => {
@@ -424,53 +525,60 @@ function exibirMenuPrincipal(rl) {
   
 
   function mudarConsulta(rl) {
-    rl.question("Digite o ID da consulta que deseja alterar: ", (idConsulta) => {
-      const consultaEncontrada = sistema.consultas.listaConsultas.find(
-        (consulta) => consulta.id === idConsulta
-      );
+    rl.question("Digite o nome do cliente: ", (nomeCliente) => {
+      rl.question("Digite a data da consulta: ", (dataConsulta) => {
+        const consultaEncontrada = sistema.consultas.listaConsultas.find(
+          (consulta) => consulta.cliente === nomeCliente && consulta.data === dataConsulta
+        );
   
-      if (consultaEncontrada) {
-        rl.question("Digite o novo nome do cliente: ", (novoCliente) => {
-          rl.question("Digite o novo nome do pet: ", (novoPet) => {
-            rl.question("Digite o novo nome do funcionário: ", (novoFuncionario) => {
-              rl.question("Digite o novo status da consulta: ", (novoStatus) => {
-                rl.question("Digite a nova data da consulta: ", (novaData) => {
-                  consultaEncontrada.cliente = novoCliente || consultaEncontrada.cliente;
-                  consultaEncontrada.pet = novoPet || consultaEncontrada.pet;
-                  consultaEncontrada.funcionario = novoFuncionario || consultaEncontrada.funcionario;
-                  consultaEncontrada.status = novoStatus || consultaEncontrada.status;
-                  consultaEncontrada.data = novaData || consultaEncontrada.data;
+        if (consultaEncontrada) {
+          rl.question("Digite o novo nome do cliente: ", (novoCliente) => {
+            rl.question("Digite o novo nome do pet: ", (novoPet) => {
+              rl.question("Digite o novo nome do funcionário: ", (novoFuncionario) => {
+                rl.question("Digite o novo status da consulta: ", (novoStatus) => {
+                  rl.question("Digite a nova data da consulta: ", (novaData) => {
+                    consultaEncontrada.cliente = novoCliente || consultaEncontrada.cliente;
+                    consultaEncontrada.pet = novoPet || consultaEncontrada.pet;
+                    consultaEncontrada.funcionario = novoFuncionario || consultaEncontrada.funcionario;
+                    consultaEncontrada.status = novoStatus || consultaEncontrada.status;
+                    consultaEncontrada.data = novaData || consultaEncontrada.data;
   
-                  console.log("Consulta alterada com sucesso!");
-                  exibirMenuPrincipal(rl);
+                    console.log("Consulta alterada com sucesso!");
+                    exibirMenuPrincipal(rl);
+                  });
                 });
               });
             });
           });
-        });
-      } else {
-        console.log("Consulta não encontrada!");
-        exibirMenuPrincipal(rl);
-      }
+        } else {
+          console.log("Consulta não encontrada!");
+          exibirMenuPrincipal(rl);
+        }
+      });
     });
   }
 
   function cancelarConsulta(rl) {
-    rl.question("Digite o ID da consulta a ser cancelada: ", (idConsulta) => {
-      const consultaEncontrada = sistema.consultas.encontrarConsultaPorId(idConsulta);
+    rl.question("Digite o nome do cliente: ", (nomeCliente) => {
+      rl.question("Digite a data da consulta: ", (dataConsulta) => {
+        const consultaEncontradaIndex = sistema.consultas.listaConsultas.findIndex(
+          (consulta) => consulta.cliente === nomeCliente && consulta.data === dataConsulta
+        );
   
-      if (consultaEncontrada) {
-        sistema.consultas.removerConsulta(consultaEncontrada);
-        console.log("Consulta cancelada com sucesso!");
-      } else {
-        console.log("Consulta não encontrada!");
-      }
-  
-      exibirMenuPrincipal(rl);
+        if (consultaEncontradaIndex !== -1) {
+          // Remover a consulta da array
+          sistema.consultas.listaConsultas.splice(consultaEncontradaIndex, 1);
+          console.log('Consulta cancelada com sucesso!');
+          exibirMenuPrincipal(rl);
+        } else {
+          console.log('Consulta não encontrada.');
+          exibirMenuPrincipal(rl);
+        }
+      });
     });
-  }
+  }  
   
-  
+
 function exibirMenuListas(rl) {
   rl.question("Selecione uma opção:\n1 - Lista de Pets\n2 - Lista de Clientes\n3 - Lista de Consultas\n4 - Lista de Funcionários\n", (opcao) => {
     switch (opcao) {
@@ -514,24 +622,23 @@ function exibirListaClientes() {
   }
 
   function exibirListaConsultas() {
-    console.log("Lista de Consultas (em ordem cronológica):");
+    console.log("Lista de Consultas (em ordem crescente):");
   
-    const listaOrdenada = sistema.consultas.listaConsultas.sort(
-        (a, b) => new Date(a.data) - new Date(b.data)
-      );      
+    sistema.consultas.ordenarConsultasPorData();
   
-    listaOrdenada.forEach((consulta) => {
+    sistema.consultas.listaConsultas.forEach((consulta) => {
+      const [dia, mes] = consulta.data.split('/');
       console.log("ID: " + consulta.id);
       console.log("Nome do Cliente: " + consulta.cliente);
       console.log("Nome do Pet: " + consulta.pet);
       console.log("Nome do Funcionário: " + consulta.funcionario);
       console.log("Status: " + consulta.status);
-      console.log("Data da Consulta: " + consulta.data);
+      console.log("Data da Consulta: " + dia + "/" + mes);
       console.log("------------------------");
     });
   }
-   
-
+  
+  
 function exibirListaFuncionarios() {
     console.log("Lista de Funcionários (em ordem alfabética):");
     const listaOrdenada = sistema.funcionarios.listaFuncionarios.sort((a, b) => a.username.localeCompare(b.username));
