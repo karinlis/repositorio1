@@ -112,7 +112,7 @@ class Cliente {
       }
     }
   
-    adicionarClienteComInput(rl) { // Renomear a função para adicionarClienteComInput
+    adicionarClienteComInput(rl) { 
       rl.question("Digite o nome do cliente: ", (nomeCliente) => {
         rl.question("Digite o nome do pet: ", (nomePet) => {
           const novoCliente = new Cliente(null, nomeCliente, nomePet, 0);
@@ -225,7 +225,7 @@ class Consultas {
         const [dia1, mes1] = consulta1.data.split('/');
         const [dia2, mes2] = consulta2.data.split('/');
   
-        // Compara primeiro o mês
+        // Compara primeiro
         if (mes1 < mes2) {
           return -1;
         } else if (mes1 > mes2) {
@@ -566,7 +566,7 @@ function exibirMenuPrincipal(rl) {
         );
   
         if (consultaEncontradaIndex !== -1) {
-          // Remover a consulta da array
+          // Remover a
           sistema.consultas.listaConsultas.splice(consultaEncontradaIndex, 1);
           console.log('Consulta cancelada com sucesso!');
           exibirMenuPrincipal(rl);
