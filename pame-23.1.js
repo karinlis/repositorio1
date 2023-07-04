@@ -92,7 +92,7 @@ class Cliente {
     constructor() {
       this.listaClientes = [];
   
-      // Exemplos de clientes
+      // 
       this.adicionarCliente(new Cliente("01", "Karine", "Sofia", 5));
       this.adicionarCliente(new Cliente("02", "Weder", "Nick", 2));
       this.adicionarCliente(new Cliente("03", "Fernanda", "Bruno", 1));
@@ -129,7 +129,7 @@ class Cliente {
     constructor() {
       this.listaPets = [];
   
-      // Exemplos de pets
+      //
       this.adicionarPet(new Pet("01", "Sofia", "Karine"));
       this.adicionarPet(new Pet("02", "Nick", "Weder"));
       this.adicionarPet(new Pet("03", "Bruno", "Fernanda"));
@@ -225,14 +225,14 @@ class Consultas {
         const [dia1, mes1] = consulta1.data.split('/');
         const [dia2, mes2] = consulta2.data.split('/');
   
-        // Compara primeiro
+        //
         if (mes1 < mes2) {
           return -1;
         } else if (mes1 > mes2) {
           return 1;
         }
   
-        // Em caso de empate no mês, compara o dia
+        //
         if (dia1 < dia2) {
           return -1;
         } else if (dia1 > dia2) {
@@ -259,7 +259,7 @@ class Consultas {
 
 const sistema = new Sistema();
 
-//Exemplos de funcionários e suas respectivas senhas
+//
 const funcionariosAdicionais = [
     {
       id: 9,
@@ -286,7 +286,7 @@ const funcionariosAdicionais = [
     );
     sistema.funcionarios.adicionarFuncionario(novoFuncionario);
   });
-//Exemplos de consultas
+//
   const consultasAdicionais = [
     {
       id: 25,
